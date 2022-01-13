@@ -2,21 +2,38 @@ import pygame
 
 
 class Character(pygame.sprite.Sprite):
-    def __init__(self, elements, x, y, *group):
+    def __init__(self, x, y, *group):
         super().__init__(*group)
-        self.mode = 'idle'
-        self.frames = [pygame.transform.scale(pygame.image.load(f'{self.mode}/{i}.png'), (60, 100))
-                       for i in range(elements)]
-        self.cur_frame = 0
-        self.image = self.frames[self.cur_frame]
+        self.image = pygame.Surface((50, 50))
+        self.image.fill('blue')
         self.rect = self.image.get_rect()
-        self.rect = self.rect.move(x * 54 + 24, y * 54 + 8)
-        self.mask = pygame.mask.from_surface(self.image)
+        self.rect.x = x
+        self.rect.y = y
+        self.normal_vector = pygame.math.Vector2(0, 0)
+        self.speed_scalar = 10
+        self.g = 0.98  # pixels / sec ** 2 ha-ha
+        self.jump_impulse = -20
+        self.is_jumping = False
 
-    def change_mode(self, mode):
-        pass
+    def run(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_d]:
+            self.normal_vector.x = 1
+        elif keys[pygame.K_a]:
+            self.normal_vector.x = -1
+        else:
+            self.normal_vector.x = 0
+        if keys[pygame.K_SPACE]:
+            if not self.is_jumping:
+                self.is_jumping = True
+                self.jump()
+
+    def jump(self):
+        self.normal_vector.y = self.jump_impulse
+
+    def gravity(self):
+        self.normal_vector.y += self.g
+        self.rect.y += self.normal_vector.y
 
     def update(self):
-        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
-        self.image = self.frames[self.cur_frame]
-        self.mask = pygame.mask.from_surface(self.image)
+        self.run()
