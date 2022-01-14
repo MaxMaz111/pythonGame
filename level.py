@@ -1,8 +1,10 @@
+import sys
+
 import pygame
 from square import Square
 from character import Character
 
-size = width, height = 1200, 700
+size = width, height = 1920, 1080
 
 
 class Level:
@@ -12,7 +14,7 @@ class Level:
         self.tiles = pygame.sprite.Group()
         self.hero = pygame.sprite.GroupSingle()
         self.shift = 0
-        self.side = 50
+        self.side = 54
         for i in range(len(self.level_map)):
             for j in range(len(self.level_map[i])):
                 if self.level_map[i][j] == '*':
@@ -44,19 +46,23 @@ class Level:
         self.hero.sprite.gravity()
         for i in self.tiles.sprites():
             if i.rect.colliderect(self.hero.sprite.rect):
-                self.hero.sprite.is_jumping = False
+                if self.hero.sprite.normal_vector.y > 0:
+                    self.hero.sprite.is_jumping = False
                 if self.hero.sprite.normal_vector.y < 0:
                     self.hero.sprite.rect.top = i.rect.bottom
                     self.hero.sprite.normal_vector.y = 0
                 elif self.hero.sprite.normal_vector.y > 0:
                     self.hero.sprite.rect.bottom = i.rect.top
                     self.hero.sprite.normal_vector.y = 0
+                break
+        else:
+            self.hero.sprite.is_jumping = True
 
     def run(self):
         self.tiles.update(self.shift)
         self.tiles.draw(self.screen)
         self.scroll()
-
+        self.hero.sprite.animate(16)
         self.hero.update()
         self.horizontal()
         self.vertical()
