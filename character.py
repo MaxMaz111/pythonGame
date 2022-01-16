@@ -7,7 +7,9 @@ class Character(pygame.sprite.Sprite):
         self.animations = {'idle_right': [pygame.image.load(f'idle_right/{i}.png') for i in range(4)],
                            'idle_left': [pygame.image.load(f'idle_left/{i}.png') for i in range(4)],
                            'run_right': [pygame.image.load(f'run_right/{i}.png') for i in range(8)],
-                           'run_left': [pygame.image.load(f'run_left/{i}.png') for i in range(8)]}
+                           'run_left': [pygame.image.load(f'run_left/{i}.png') for i in range(8)],
+                           'jump_right': [pygame.image.load(f'jump_right/0.png') for i in range(1)],
+                           'jump_left': [pygame.image.load(f'jump_left/0.png') for i in range(1)]}
         self.mode = 'idle_right'
         self.frame = 0
         self.image = self.animations[self.mode][self.frame]
@@ -23,7 +25,21 @@ class Character(pygame.sprite.Sprite):
 
     def run(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_d]:
+        if keys[pygame.K_SPACE]:
+            if not self.is_jumping:
+                self.is_jumping = True
+                if 'right' in self.mode:
+                    self.mode = 'jump_right'
+                elif 'left' in self.mode:
+                    self.mode = 'jump_left'
+                self.jump()
+            if keys[pygame.K_d]:
+                self.normal_vector.x = 1
+            elif keys[pygame.K_a]:
+                self.normal_vector.x = -1
+            else:
+                self.normal_vector.x = 0
+        elif keys[pygame.K_d]:
             self.normal_vector.x = 1
             self.mode = 'run_right'
         elif keys[pygame.K_a]:
@@ -31,15 +47,10 @@ class Character(pygame.sprite.Sprite):
             self.mode = 'run_left'
         else:
             self.normal_vector.x = 0
-            if self.mode == 'run_right':
+            if 'right' in self.mode:
                 self.mode = 'idle_right'
-            elif self.mode == 'run_left':
+            elif 'left' in self.mode:
                 self.mode = 'idle_left'
-        if keys[pygame.K_SPACE]:
-            if not self.is_jumping:
-                self.is_jumping = True
-                # self.mode = 'jumping'
-                self.jump()
 
     def animate(self, speed):
         if self.timer % speed == 0:

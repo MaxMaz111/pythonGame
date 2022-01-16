@@ -15,6 +15,7 @@ class Level:
         self.hero = pygame.sprite.GroupSingle()
         self.shift = 0
         self.side = 54
+        self.dead = False
         for i in range(len(self.level_map)):
             for j in range(len(self.level_map[i])):
                 if self.level_map[i][j] == '*':
@@ -62,8 +63,19 @@ class Level:
         self.tiles.update(self.shift)
         self.tiles.draw(self.screen)
         self.scroll()
-        self.hero.sprite.animate(16)
+        if self.hero.sprite.mode == 'idle_right' or self.hero.sprite.mode == 'idle_left':
+            self.hero.sprite.animate(16)
+        else:
+            self.hero.sprite.animate(6)
         self.hero.update()
         self.horizontal()
         self.vertical()
         self.hero.draw(self.screen)
+        if self.hero.sprite.rect.y >= height:
+            self.dead = True
+            font = pygame.font.Font(None, 50)
+            text = font.render('Game over!', True, (255, 255, 0))
+            text_rect = text.get_rect()
+            text_rect.centerx = width // 2
+            text_rect.centery = height // 2
+            self.screen.blit(text, text_rect)
