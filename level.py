@@ -1,6 +1,8 @@
 import sys
 
 import pygame
+
+from coin import Coin
 from square import Square
 from character import Character
 
@@ -13,6 +15,8 @@ class Level:
         self.level_map = level_map
         self.tiles = pygame.sprite.Group()
         self.hero = pygame.sprite.GroupSingle()
+        self.coins = pygame.sprite.Group()
+        self.coin_counter = 0
         self.shift = 0
         self.side = 54
         self.dead = False
@@ -22,6 +26,8 @@ class Level:
                     Square(j * self.side, i * self.side, self.side, self.side, self.tiles)
                 if self.level_map[i][j] == '@':
                     Character(j * self.side, i * self.side, self.hero)
+                if self.level_map[i][j] == 'm':
+                    Coin(j * self.side, i * self.side, self.coins)
 
     def scroll(self):
         if self.hero.sprite.rect.centerx < width // 5 and self.hero.sprite.normal_vector.x < 0:
@@ -47,6 +53,9 @@ class Level:
         self.hero.sprite.gravity()
         for i in self.tiles.sprites():
             if i.rect.colliderect(self.hero.sprite.rect):
+                if i.type == 'coin':
+                    self.coin_counter += 1
+                    continue
                 if self.hero.sprite.normal_vector.y > 0:
                     self.hero.sprite.is_jumping = False
                 if self.hero.sprite.normal_vector.y < 0:
@@ -71,6 +80,8 @@ class Level:
         self.horizontal()
         self.vertical()
         self.hero.draw(self.screen)
+        self.coins.update(self.shift)
+        self.coins.draw(self.screen)
         if self.hero.sprite.rect.y >= height:
             self.dead = True
             font = pygame.font.Font(None, 50)

@@ -19,7 +19,7 @@ class Character(pygame.sprite.Sprite):
         self.normal_vector = pygame.math.Vector2(0, 0)
         self.speed_scalar = 10
         self.g = 0.98
-        self.jump_impulse = -25
+        self.jump_impulse = -20
         self.is_jumping = False
         self.timer = 0
 
