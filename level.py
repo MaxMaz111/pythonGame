@@ -5,6 +5,7 @@ import pygame
 from coin import Coin
 from square import Square
 from character import Character
+from button import Button
 
 size = width, height = 1920, 1080
 
@@ -16,6 +17,8 @@ class Level:
         self.tiles = pygame.sprite.Group()
         self.hero = pygame.sprite.GroupSingle()
         self.coins = pygame.sprite.Group()
+        self.buttons = pygame.sprite.Group()
+        self.pause_btn = Button(1840, 5, 'sprites/pause.png', 'pause', self.buttons)
         self.coin_counter = 0
         self.shift = 0
         self.side = 54
@@ -72,6 +75,7 @@ class Level:
         self.tiles.update(self.shift)
         self.tiles.draw(self.screen)
         self.scroll()
+        self.buttons.draw(self.screen)
         if self.hero.sprite.mode == 'idle_right' or self.hero.sprite.mode == 'idle_left':
             self.hero.sprite.animate(16)
         else:
