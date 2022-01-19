@@ -1,11 +1,12 @@
-import sys
-
 import pygame
 
+import parameters
+from parameters import current_level
 from coin import Coin
 from square import Square
 from character import Character
 from button import Button
+from finishsquare import FinishSquare
 
 size = width, height = 1920, 1080
 
@@ -18,10 +19,12 @@ class Level:
         self.hero = pygame.sprite.GroupSingle()
         self.coins = pygame.sprite.Group()
         self.buttons = pygame.sprite.Group()
+        #self.finish = pygame.sprite.Group()
         self.pause_btn = Button(1840, 5, 'sprites/pause.png', 'pause', self.buttons)
         self.coin_counter = 0
         self.shift = 0
         self.side = 54
+        self.comp = False
         self.dead = False
         for i in range(len(self.level_map)):
             for j in range(len(self.level_map[i])):
@@ -31,6 +34,8 @@ class Level:
                     Character(j * self.side, i * self.side, self.hero)
                 if self.level_map[i][j] == 'm':
                     Coin(j * self.side, i * self.side, self.coins)
+                if self.level_map[i][j] == 'f':
+                    FinishSquare(j * self.side, i * self.side, self.side, self.side, self.tiles)
 
     def scroll(self):
         if self.hero.sprite.rect.centerx < width // 5 and self.hero.sprite.normal_vector.x < 0:
@@ -51,6 +56,9 @@ class Level:
                     self.hero.sprite.rect.left = i.rect.right
                 elif self.hero.sprite.normal_vector.x > 0:
                     self.hero.sprite.rect.right = i.rect.left
+                if i.type == 'finish':
+                    self.comp = True
+                    return
 
     def vertical(self):
         self.hero.sprite.gravity()
@@ -67,6 +75,9 @@ class Level:
                 elif self.hero.sprite.normal_vector.y > 0:
                     self.hero.sprite.rect.bottom = i.rect.top
                     self.hero.sprite.normal_vector.y = 0
+                if i.type == 'finish':
+                    self.comp = True
+                    return
                 break
         else:
             self.hero.sprite.is_jumping = True
@@ -86,6 +97,7 @@ class Level:
         self.hero.draw(self.screen)
         self.coins.update(self.shift)
         self.coins.draw(self.screen)
+
         if self.hero.sprite.rect.y >= height:
             self.dead = True
             font = pygame.font.Font(None, 50)
