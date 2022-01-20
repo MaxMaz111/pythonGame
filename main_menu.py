@@ -18,6 +18,8 @@ class MainMenu:
             self.level_3 = Button(100, 460, 'sprites/level_3.png', '3', self.buttons)
         else:
             self.level_3 = Button(100, 460, 'sprites/level_3wb.png', '3', self.buttons)
+        if parameters.LVL3_COMP:
+            self.finishbtn = Button(100, 560, 'sprites/finish.png', 'finish', self.buttons)
 
     def run(self):
         self.buttons.draw(self.screen)

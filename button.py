@@ -3,7 +3,7 @@ import pygame
 
 class Button(pygame.sprite.Sprite):
     def __init__(self, x, y, image, name,  *group):
-        super(Button, self).__init__(*group)
+        super().__init__(*group)
         self.name = name
         im = pygame.image.load(image)
         self.image = pygame.transform.scale(im, (im.get_width(), im.get_height()))
