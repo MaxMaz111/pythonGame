@@ -1,7 +1,5 @@
 import pygame
 
-import parameters
-from parameters import current_level
 from coin import Coin
 from square import Square
 from character import Character
@@ -19,11 +17,12 @@ class Level:
         self.hero = pygame.sprite.GroupSingle()
         self.coins = pygame.sprite.Group()
         self.buttons = pygame.sprite.Group()
-        #self.finish = pygame.sprite.Group()
         self.pause_btn = Button(1840, 5, 'sprites/pause.png', 'pause', self.buttons)
+        self.coin_display = pygame.image.load('sprites/coin.png')
         self.coin_counter = 0
         self.shift = 0
         self.side = 54
+        self.coin_amount = 0
         self.comp = False
         self.dead = False
         for i in range(len(self.level_map)):
@@ -34,19 +33,37 @@ class Level:
                     Character(j * self.side, i * self.side, self.hero)
                 if self.level_map[i][j] == 'm':
                     Coin(j * self.side, i * self.side, self.coins)
+                    self.coin_amount += 1
+                if self.level_map[i][j] == 'f':
+                    FinishSquare(j * self.side, i * self.side, self.side, self.side, self.tiles)
+
+    def restart(self):
+        self.hero.empty()
+        self.coins.empty()
+        self.tiles.empty()
+        for i in range(len(self.level_map)):
+            for j in range(len(self.level_map[i])):
+                if self.level_map[i][j] == '*':
+                    Square(j * self.side, i * self.side, self.side, self.side, self.tiles)
+                if self.level_map[i][j] == '@':
+                    Character(j * self.side, i * self.side, self.hero)
+                if self.level_map[i][j] == 'm':
+                    Coin(j * self.side, i * self.side, self.coins)
+                    self.coin_amount += 1
                 if self.level_map[i][j] == 'f':
                     FinishSquare(j * self.side, i * self.side, self.side, self.side, self.tiles)
 
     def scroll(self):
-        if self.hero.sprite.rect.centerx < width // 5 and self.hero.sprite.normal_vector.x < 0:
-            self.shift = 5
-            self.hero.sprite.speed_scalar = 0
-        elif self.hero.sprite.rect.centerx > width * 4 // 5 and self.hero.sprite.normal_vector.x > 0:
-            self.shift = -5
-            self.hero.sprite.speed_scalar = 0
-        else:
-            self.shift = 0
-            self.hero.sprite.speed_scalar = 5
+        if not self.dead:
+            if self.hero.sprite.rect.centerx < width // 5 and self.hero.sprite.normal_vector.x < 0:
+                self.shift = 5
+                self.hero.sprite.speed_scalar = 0
+            elif self.hero.sprite.rect.centerx > width * 4 // 5 and self.hero.sprite.normal_vector.x > 0:
+                self.shift = -5
+                self.hero.sprite.speed_scalar = 0
+            else:
+                self.shift = 0
+                self.hero.sprite.speed_scalar = 5
 
     def horizontal(self):
         self.hero.sprite.rect.x += self.hero.sprite.normal_vector.x * self.hero.sprite.speed_scalar
@@ -62,11 +79,12 @@ class Level:
 
     def vertical(self):
         self.hero.sprite.gravity()
+        for i in self.coins.sprites():
+            if i.rect.colliderect(self.hero.sprite.rect):
+                self.coins.remove(i)
+                self.coin_counter += 1
         for i in self.tiles.sprites():
             if i.rect.colliderect(self.hero.sprite.rect):
-                if i.type == 'coin':
-                    self.coin_counter += 1
-                    continue
                 if self.hero.sprite.normal_vector.y > 0:
                     self.hero.sprite.is_jumping = False
                 if self.hero.sprite.normal_vector.y < 0:
@@ -97,6 +115,13 @@ class Level:
         self.hero.draw(self.screen)
         self.coins.update(self.shift)
         self.coins.draw(self.screen)
+        self.screen.blit(self.coin_display, (0, 0))
+        font = pygame.font.Font(None, 70)
+        text = font.render(f'{self.coin_counter}/{self.coin_amount}', True, (255, 255, 255))
+        text_rect = text.get_rect()
+        text_rect.x = 54
+        text_rect.y = 0
+        self.screen.blit(text, text_rect)
 
         if self.hero.sprite.rect.y >= height:
             self.dead = True
@@ -106,4 +131,4 @@ class Level:
             text_rect.centerx = width // 2
             text_rect.centery = height // 2
             self.screen.blit(text, text_rect)
-        return self.screen
+

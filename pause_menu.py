@@ -12,5 +12,4 @@ class PauseMenu:
         self.back_to_main_menu_btn = Button(920, 600, 'sprites/back_to_main_menu.png', 'back_to_main_menu', self.buttons)
 
     def run(self):
-      #  self.screen.fill((0, 0, 0))
         self.buttons.draw(self.screen)
