@@ -106,4 +106,4 @@ class Level:
             text_rect.centerx = width // 2
             text_rect.centery = height // 2
             self.screen.blit(text, text_rect)
-        return self.screen
+
