@@ -1,5 +1,6 @@
 import pygame
 
+import parameters
 from coin import Coin
 from square import Square
 from character import Character
@@ -25,6 +26,8 @@ class Level:
         self.coin_amount = 0
         self.comp = False
         self.dead = False
+        # self.background = pygame.image.load('sprites/back_level.png')
+        # self.background_rect = self.background.get_rect()
         for i in range(len(self.level_map)):
             for j in range(len(self.level_map[i])):
                 if self.level_map[i][j] == '*':
@@ -103,6 +106,7 @@ class Level:
             self.hero.sprite.is_jumping = True
 
     def run(self):
+        # self.screen.blit(self.background, self.background_rect)
         self.tiles.update(self.shift)
         self.tiles.draw(self.screen)
         self.scroll()
