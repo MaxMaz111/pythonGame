@@ -1,7 +1,7 @@
 import pygame
 
 import parameters
-from parameters import current_level
+
 from coin import Coin
 from square import Square
 from character import Character
@@ -19,13 +19,14 @@ class Level:
         self.hero = pygame.sprite.GroupSingle()
         self.coins = pygame.sprite.Group()
         self.buttons = pygame.sprite.Group()
-        #self.finish = pygame.sprite.Group()
         self.pause_btn = Button(1840, 5, 'sprites/pause.png', 'pause', self.buttons)
         self.coin_counter = 0
         self.shift = 0
         self.side = 54
         self.comp = False
         self.dead = False
+        # self.background = pygame.image.load('sprites/back_level.png')
+        # self.background_rect = self.background.get_rect()
         for i in range(len(self.level_map)):
             for j in range(len(self.level_map[i])):
                 if self.level_map[i][j] == '*':
@@ -83,6 +84,7 @@ class Level:
             self.hero.sprite.is_jumping = True
 
     def run(self):
+        # self.screen.blit(self.background, self.background_rect)
         self.tiles.update(self.shift)
         self.tiles.draw(self.screen)
         self.scroll()
