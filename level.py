@@ -26,8 +26,8 @@ class Level:
         self.coin_amount = 0
         self.comp = False
         self.dead = False
-        # self.background = pygame.image.load('sprites/back_level.png')
-        # self.background_rect = self.background.get_rect()
+        self.background = pygame.image.load('sprites/back_level.bmp').convert()
+        self.background_rect = self.background.get_rect()
         for i in range(len(self.level_map)):
             for j in range(len(self.level_map[i])):
                 if self.level_map[i][j] == '*':
@@ -36,22 +36,6 @@ class Level:
                     Character(j * self.side, i * self.side, self.hero)
                     self.start_x = j * self.side
                     self.start_y = i * self.side
-                if self.level_map[i][j] == 'm':
-                    Coin(j * self.side, i * self.side, self.coins)
-                    self.coin_amount += 1
-                if self.level_map[i][j] == 'f':
-                    FinishSquare(j * self.side, i * self.side, self.side, self.side, self.tiles)
-
-    def restart(self):
-        self.hero.empty()
-        self.coins.empty()
-        self.tiles.empty()
-        for i in range(len(self.level_map)):
-            for j in range(len(self.level_map[i])):
-                if self.level_map[i][j] == '*':
-                    Square(j * self.side, i * self.side, self.side, self.side, self.tiles)
-                if self.level_map[i][j] == '@':
-                    Character(j * self.side, i * self.side, self.hero)
                 if self.level_map[i][j] == 'm':
                     Coin(j * self.side, i * self.side, self.coins)
                     self.coin_amount += 1
@@ -106,7 +90,7 @@ class Level:
             self.hero.sprite.is_jumping = True
 
     def run(self):
-        # self.screen.blit(self.background, self.background_rect)
+        self.screen.blit(self.background, self.background_rect)
         self.tiles.update(self.shift)
         self.tiles.draw(self.screen)
         self.scroll()

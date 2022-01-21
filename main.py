@@ -1,7 +1,5 @@
 import pygame
-
 import csv
-import datetime
 import sqlite3
 from level import Level
 from main_menu import MainMenu
@@ -16,8 +14,7 @@ size = width, height = 1920, 1080
 
 screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
-background = pygame.image.load('sprites/back_level.png')
-screen.blit(background, (0, 0, 1920, 1080))
+
 con = sqlite3.connect('Leaderboard.db')
 cur = con.cursor()
 
@@ -37,7 +34,7 @@ pause_menu = PauseMenu(screen)
 finish_window = FinishWindow(screen)
 
 LEVELS = [[main_menu, ],
-          [level_1, level_1_map], [level_2, level_2_map], [level_3, level_3_map],
+          [level_1, level_1_map, 0], [level_2, level_2_map, 0], [level_3, level_3_map, 0],
           [pause_menu, ],
           [finish_window, ],
           [information_menu, ]]
@@ -49,7 +46,6 @@ parameters.text = ''
 if __name__ == '__main__':
     running = True
     while running:
-        screen.fill((0, 0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -79,7 +75,6 @@ if __name__ == '__main__':
                             LEVELS[current_level][0] = level_3 = Level(screen, level_3_map)
                         if i.name == 'finish':
                             current_level = 5
-
             if current_level == 1:
                 for j in level_1.buttons:
                     mouse = pygame.mouse.get_pos()
@@ -89,6 +84,36 @@ if __name__ == '__main__':
                             current_level = 4
                             PAUSE = True
                 if level_1.comp:
+                    parameters.LVL1_COMP = True
+                    LEVELS[current_level][2] = level_1.coin_counter
+                    current_level = 0
+                    main_menu = MainMenu(screen)
+                    LEVELS[0] = [main_menu, ]
+            if current_level == 2:
+                for j in level_2.buttons:
+                    mouse = pygame.mouse.get_pos()
+                    if j.rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
+                        if j.name == 'pause':
+                            last_level = 0 + current_level
+                            current_level = 4
+                            PAUSE = True
+                if level_2.comp:
+                    LEVELS[current_level][2] = level_2.coin_counter
+                    parameters.LVL2_COMP = True
+                    current_level = 0
+                    main_menu = MainMenu(screen)
+                    LEVELS[0] = [main_menu, ]
+            if current_level == 3:
+                for j in level_3.buttons:
+                    mouse = pygame.mouse.get_pos()
+                    if j.rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
+                        if j.name == 'pause':
+                            last_level = 0 + current_level
+                            current_level = 4
+                            PAUSE = True
+                if level_3.comp:
+                    LEVELS[current_level][2] = level_3.coin_counter
+                    parameters.LVL3_COMP = True
                     current_level = 0
                     main_menu = MainMenu(screen)
                     LEVELS[0] = [main_menu, ]
@@ -108,6 +133,7 @@ if __name__ == '__main__':
                             current_level = 0
             if current_level == 5:
                 inputflag = True
+                flagcommit = True
                 pygame.key.start_text_input()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
                     if parameters.text:
@@ -124,17 +150,21 @@ if __name__ == '__main__':
                     mouse = pygame.mouse.get_pos()
                     if btn.rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
                         if btn.name == 'input':
-                            if parameters.text:
-                            # cur.execute(f'INSERT INTO table(name, score) VALUES({parameters.text}, {score})')
-                                pass
+                            if parameters.text and flagcommit:
+                                score = LEVELS[1][2] + LEVELS[2][2] + LEVELS[3][2]
+                                cur.execute(f"INSERT INTO table1(name, score) VALUES(?, ?)", (parameters.text, score))
+                                con.commit()
                         elif btn.name == 'make_table':
-                            res = cur.execute(f'SELECT * FROM table1').fetchall()
-                            res.sort(key=lambda x: x[1])
-                            fname = datetime.datetime.now().strftime("%H.%M.%S  %d.%m.%Y") + ' scoreboard'
-                            with open(f'{fname}.csv', 'w', encoding='utf8') as f:
-                                writer = csv.writer(f, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                                for i in res:
-                                    writer.writerow(i)
+                            res = cur.execute(f'SELECT name, score FROM table1').fetchall()
+                            res.sort(key=lambda x: x[1], reverse=True)
+                            print(res)
+                            fieldnames = ['place', 'nickname', 'score']
+                            with open('scoreboard.csv', 'w', encoding='utf8', newline='') as f:
+                                writer = csv.DictWriter(f, delimiter=';', quotechar='"',
+                                                        quoting=csv.QUOTE_MINIMAL, fieldnames=fieldnames)
+                                writer.writeheader()
+                                for i in range(len(res)):
+                                    writer.writerow({'place': i + 1, 'nickname': res[i][0], 'score': res[i][1]})
                         elif btn.name == 'new':
                             parameters.text = ''
                             current_level = 0
