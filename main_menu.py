@@ -33,3 +33,4 @@ class MainMenu:
         if parameters.LVL3_COMP:
             self.finish = Button(100, 560, 'sprites/finish.png', 'finish', self.buttons)
         self.buttons.draw(self.screen)
+

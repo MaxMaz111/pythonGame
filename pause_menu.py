@@ -13,3 +13,4 @@ class PauseMenu:
 
     def run(self):
         self.buttons.draw(self.screen)
+
