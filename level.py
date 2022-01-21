@@ -31,6 +31,8 @@ class Level:
                     Square(j * self.side, i * self.side, self.side, self.side, self.tiles)
                 if self.level_map[i][j] == '@':
                     Character(j * self.side, i * self.side, self.hero)
+                    self.start_x = j * self.side
+                    self.start_y = i * self.side
                 if self.level_map[i][j] == 'm':
                     Coin(j * self.side, i * self.side, self.coins)
                     self.coin_amount += 1
@@ -131,4 +133,3 @@ class Level:
             text_rect.centerx = width // 2
             text_rect.centery = height // 2
             self.screen.blit(text, text_rect)
-

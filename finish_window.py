@@ -10,6 +10,5 @@ class FinishWindow:
         self.make_table_btn = Button(20, 700, 'sprites/make_table.png', 'make_table', self.buttons)
         self.new_game_btn = Button(700, 700, 'sprites/new_game.png', 'new', self.buttons)
 
-
     def run(self):
         self.buttons.draw(self.screen)

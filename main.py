@@ -41,14 +41,17 @@ if __name__ == '__main__':
                 if stages[parameters.current_level].comp:
                     parameters.LVL1_COMP = True
                     parameters.LVL1_COINS = max(parameters.LVL1_COINS, stages[parameters.current_level].coin_counter)
+                    parameters.current_level = 0
             if parameters.current_level == 2:
                 if stages[parameters.current_level].comp:
                     parameters.LVL2_COMP = True
                     parameters.LVL2_COINS = max(parameters.LVL2_COINS, stages[parameters.current_level].coin_counter)
+                    parameters.current_level = 0
             if parameters.current_level == 3:
                 if stages[parameters.current_level].comp:
                     parameters.LVL3_COMP = True
                     parameters.LVL3_COINS = max(parameters.LVL3_COINS, stages[parameters.current_level].coin_counter)
+                    parameters.current_level = 0
             for i in stages[parameters.current_level].buttons:
                 mouse = pygame.mouse.get_pos()
                 if i.rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
@@ -63,11 +66,13 @@ if __name__ == '__main__':
                         parameters.last_level = 0
                         parameters.current_level = 2
                     if i.name == '3' and parameters.LVL2_COMP:
-                        parameters.last_level = 0
+                        parameters.last_level = 0r
                         parameters.current_level = 3
                     if i.name == 'play':
                         parameters.current_level = parameters.last_level
                     if i.name == 'back_to_main_menu':
+                        stages[parameters.last_level].hero.sprite.rect.x = stages[parameters.last_level].start_x
+                        stages[parameters.last_level].hero.sprite.rect.y = stages[parameters.last_level].start_y
                         parameters.current_level = 0
                     if i.name == 'restart':
                         parameters.current_level = parameters.last_level
