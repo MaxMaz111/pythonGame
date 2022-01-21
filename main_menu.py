@@ -35,4 +35,7 @@ class MainMenu:
         self.timer += 1
         self.screen.blit(self.background, (0, 0))
         self.buttons.draw(self.screen)
-        self.screen.blit(self.image, (600, 600))
+        self.screen.blit(self.image, (600, 400))
+        tmp = pygame.image.load('sprites/grass.png')
+        for i in range(7):
+            self.screen.blit(pygame.transform.scale(tmp, (66 * 5, 66 * 5)), (i * 330, 960))
