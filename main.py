@@ -52,14 +52,14 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             if current_level == 0:
-                for i in main_menu.buttons:
+                for i in LEVELS[0][0].buttons:
                     mouse = pygame.mouse.get_pos()
                     if i.rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
                         if i.name == 'information':
                             current_level = 6
                         if i.name == 'new':
                             parameters.text = ''
-                            current_level = 0
+                            parameters.current_level = 0
                             parameters.LVL1_COMP = False
                             parameters.LVL2_COMP = False
                             parameters.LVL3_COMP = False
@@ -67,7 +67,9 @@ if __name__ == '__main__':
                             inputflag = True
                             LEVELS[0][0] = MainMenu(screen)
                             LEVELS[1][2], LEVELS[2][2], LEVELS[3][2] = 0, 0, 0
-
+                        if i.name == 'finish':
+                            current_level = 5
+                            break
                         if i.name == '1':
                             current_level = 1
                             tmpcomplvl = 0 + LEVELS[1][0].comp
@@ -80,8 +82,7 @@ if __name__ == '__main__':
                             current_level = 3
                             tmpcomplvl = 0 + LEVELS[3][0].comp
                             LEVELS[current_level][0] = Level(screen, level_3_map)
-                        if i.name == 'finish' and parameters.LVL3_COMP:
-                            current_level = 5
+
             if current_level == 1:
                 for j in level_1.buttons:
                     mouse = pygame.mouse.get_pos()
@@ -167,7 +168,6 @@ if __name__ == '__main__':
                         elif btn.name == 'make_table':
                             res = cur.execute(f'SELECT name, score FROM table1').fetchall()
                             res.sort(key=lambda x: x[1], reverse=True)
-                            print(res)
                             fieldnames = ['place', 'nickname', 'score']
                             with open('scoreboard.csv', 'w', encoding='utf8', newline='') as f:
                                 writer = csv.DictWriter(f, delimiter=';', quotechar='"',
@@ -177,7 +177,7 @@ if __name__ == '__main__':
                                     writer.writerow({'place': i + 1, 'nickname': res[i][0], 'score': res[i][1]})
                         elif btn.name == 'new':
                             parameters.text = ''
-                            current_level = 0
+                            parameters.current_level = 0
                             parameters.LVL1_COMP = False
                             parameters.LVL2_COMP = False
                             parameters.LVL3_COMP = False
