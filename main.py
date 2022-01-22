@@ -146,7 +146,7 @@ if __name__ == '__main__':
                         parameters.text = parameters.text[:-1]
                 elif event.type == pygame.KEYDOWN and inputflag and event.unicode != '\x08':
                     if len(parameters.text) <= 20:
-                        if event.unicode.lower() in parameters.possibleletters:
+                        if event.unicode.lower() in parameters.possible_letters:
                             parameters.text += event.unicode
 
                 LEVELS[current_level][0] = FinishWindow(screen)
