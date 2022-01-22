@@ -39,8 +39,10 @@ LEVELS = [[main_menu, ],
           [finish_window, ],
           [information_menu, ]]
 # уровень, карта
-PAUSE = False
+
+inputflag = True
 tmpcomplvl = False
+flagcommit = False
 parameters.text = ''
 
 if __name__ == '__main__':
@@ -56,24 +58,29 @@ if __name__ == '__main__':
                         if i.name == 'information':
                             current_level = 6
                         if i.name == 'new':
+                            parameters.text = ''
                             current_level = 0
                             parameters.LVL1_COMP = False
                             parameters.LVL2_COMP = False
                             parameters.LVL3_COMP = False
+                            flagcommit = False
+                            inputflag = True
                             LEVELS[0][0] = MainMenu(screen)
+                            LEVELS[1][2], LEVELS[2][2], LEVELS[3][2] = 0, 0, 0
+
                         if i.name == '1':
                             current_level = 1
-                            tmpcomplvl = 0 + level_1.comp
-                            LEVELS[current_level][0] = level_1 = Level(screen, level_1_map)
+                            tmpcomplvl = 0 + LEVELS[1][0].comp
+                            LEVELS[current_level][0] = Level(screen, level_1_map)
                         if i.name == '2' and parameters.LVL1_COMP:
                             current_level = 2
-                            mpcomplvl = 0 + level_2.comp
-                            LEVELS[current_level][0] = level_2 = Level(screen, level_2_map)
+                            tmpcomplvl = 0 + LEVELS[2][0].comp
+                            LEVELS[current_level][0] = Level(screen, level_2_map)
                         if i.name == '3' and parameters.LVL2_COMP:
                             current_level = 3
-                            mpcomplvl = 0 + level_3.comp
-                            LEVELS[current_level][0] = level_3 = Level(screen, level_3_map)
-                        if i.name == 'finish':
+                            tmpcomplvl = 0 + LEVELS[3][0].comp
+                            LEVELS[current_level][0] = Level(screen, level_3_map)
+                        if i.name == 'finish' and parameters.LVL3_COMP:
                             current_level = 5
             if current_level == 1:
                 for j in level_1.buttons:
@@ -82,13 +89,11 @@ if __name__ == '__main__':
                         if j.name == 'pause':
                             last_level = 0 + current_level
                             current_level = 4
-                            PAUSE = True
-                if level_1.comp:
+                if LEVELS[1][0].comp:
                     parameters.LVL1_COMP = True
-                    LEVELS[current_level][2] = level_1.coin_counter
+                    LEVELS[1][2] = LEVELS[1][0].coin_counter
                     current_level = 0
-                    main_menu = MainMenu(screen)
-                    LEVELS[0] = [main_menu, ]
+                    LEVELS[0][0] = MainMenu(screen)
             if current_level == 2:
                 for j in level_2.buttons:
                     mouse = pygame.mouse.get_pos()
@@ -96,13 +101,11 @@ if __name__ == '__main__':
                         if j.name == 'pause':
                             last_level = 0 + current_level
                             current_level = 4
-                            PAUSE = True
-                if level_2.comp:
-                    LEVELS[current_level][2] = level_2.coin_counter
+                if LEVELS[2][0].comp:
+                    LEVELS[2][2] = LEVELS[2][0].coin_counter
                     parameters.LVL2_COMP = True
                     current_level = 0
-                    main_menu = MainMenu(screen)
-                    LEVELS[0] = [main_menu, ]
+                    LEVELS[0][0] = MainMenu(screen)
             if current_level == 3:
                 for j in level_3.buttons:
                     mouse = pygame.mouse.get_pos()
@@ -110,13 +113,11 @@ if __name__ == '__main__':
                         if j.name == 'pause':
                             last_level = 0 + current_level
                             current_level = 4
-                            PAUSE = True
-                if level_3.comp:
-                    LEVELS[current_level][2] = level_3.coin_counter
+                if LEVELS[3][0].comp:
+                    LEVELS[3][2] = LEVELS[3][0].coin_counter
                     parameters.LVL3_COMP = True
                     current_level = 0
-                    main_menu = MainMenu(screen)
-                    LEVELS[0] = [main_menu, ]
+                    LEVELS[0][0] = MainMenu(screen)
             if current_level == 4:
                 for btn in pause_menu.buttons:
                     mouse = pygame.mouse.get_pos()
@@ -125,35 +126,44 @@ if __name__ == '__main__':
                             current_level = last_level
                         elif btn.name == 'restart':
                             current_level = 0 + last_level
-                            LEVELS[current_level] = [Level(screen, LEVELS[current_level][1]), LEVELS[current_level][1]]
+                            LEVELS[current_level] = [Level(screen, LEVELS[current_level][1]),
+                                                     LEVELS[current_level][1], 0]
                         elif btn.name == 'back_to_main_menu':
                             tmpcomp = max(LEVELS[last_level][0].comp, tmpcomplvl)
-                            LEVELS[last_level] = [Level(screen, LEVELS[last_level][1]), LEVELS[last_level][1]]
+                            if LEVELS[last_level][0].comp:
+                                LEVELS[last_level] = [Level(screen, LEVELS[last_level][1]),
+                                                      LEVELS[last_level][1],
+                                                      LEVELS[last_level][0].coin_counter]
+                            else:
+                                LEVELS[last_level] = [Level(screen, LEVELS[last_level][1]),
+                                                      LEVELS[last_level][1], 0]
                             LEVELS[last_level][0].comp = tmpcomp
                             current_level = 0
             if current_level == 5:
-                inputflag = True
-                flagcommit = True
                 pygame.key.start_text_input()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
                     if parameters.text:
                         parameters.text = parameters.text[:-1]
                 elif event.type == pygame.KEYDOWN and inputflag and event.unicode != '\x08':
                     if len(parameters.text) <= 20:
-                        parameters.text += event.unicode
-                    else:
-                        if not inputflag:
-                            pygame.key.stop_text_input()
-                        inputflag = False
+                        if event.unicode.lower() in parameters.possibleletters:
+                            parameters.text += event.unicode
+
                 LEVELS[current_level][0] = FinishWindow(screen)
                 for btn in finish_window.buttons:
                     mouse = pygame.mouse.get_pos()
                     if btn.rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
                         if btn.name == 'input':
-                            if parameters.text and flagcommit:
+                            if parameters.text and not flagcommit:
                                 score = LEVELS[1][2] + LEVELS[2][2] + LEVELS[3][2]
-                                cur.execute(f"INSERT INTO table1(name, score) VALUES(?, ?)", (parameters.text, score))
+                                tmpexecute = cur.execute(f"SELECT score FROM table1 WHERE name = '{parameters.text}'").fetchone()
+                                if tmpexecute:
+                                    cur.execute(f"INSERT INTO table1(name, score) VALUES(?, ?)",
+                                                (parameters.text, max(score, tmpexecute[0])))
+                                else:
+                                    cur.execute(f"INSERT INTO table1(name, score) VALUES(?, ?)", (parameters.text, score))
                                 con.commit()
+                                flagcommit = True
                         elif btn.name == 'make_table':
                             res = cur.execute(f'SELECT name, score FROM table1').fetchall()
                             res.sort(key=lambda x: x[1], reverse=True)
@@ -171,7 +181,10 @@ if __name__ == '__main__':
                             parameters.LVL1_COMP = False
                             parameters.LVL2_COMP = False
                             parameters.LVL3_COMP = False
+                            flagcommit = False
+                            inputflag = True
                             LEVELS[0][0] = MainMenu(screen)
+                            LEVELS[1][2], LEVELS[2][2], LEVELS[3][2] = 0, 0, 0
                             break
             if current_level == 6:
                 for btn in information_menu.buttons:

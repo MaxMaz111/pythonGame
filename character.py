@@ -22,9 +22,14 @@ class Character(pygame.sprite.Sprite):
         self.jump_impulse = -20
         self.is_jumping = False
         self.timer = 0
+        self.dead = False
 
     def run(self):
         keys = pygame.key.get_pressed()
+        if self.dead:
+            keys[pygame.K_a] = False
+            keys[pygame.K_d] = False
+            return
         if keys[pygame.K_SPACE]:
             if not self.is_jumping:
                 self.is_jumping = True
@@ -66,4 +71,5 @@ class Character(pygame.sprite.Sprite):
         self.rect.y += self.normal_vector.y
 
     def update(self):
-        self.run()
+        if not self.dead:
+            self.run()
