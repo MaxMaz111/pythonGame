@@ -52,7 +52,7 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             if current_level == 0:
-                for i in main_menu.buttons:
+                for i in LEVELS[0][0].buttons:
                     mouse = pygame.mouse.get_pos()
                     if i.rect.collidepoint(mouse) and event.type == pygame.MOUSEBUTTONDOWN:
                         if i.name == 'information':
@@ -67,7 +67,6 @@ if __name__ == '__main__':
                             inputflag = True
                             LEVELS[0][0] = MainMenu(screen)
                             LEVELS[1][2], LEVELS[2][2], LEVELS[3][2] = 0, 0, 0
-
                         if i.name == '1':
                             current_level = 1
                             tmpcomplvl = 0 + LEVELS[1][0].comp
@@ -167,7 +166,6 @@ if __name__ == '__main__':
                         elif btn.name == 'make_table':
                             res = cur.execute(f'SELECT name, score FROM table1').fetchall()
                             res.sort(key=lambda x: x[1], reverse=True)
-                            print(res)
                             fieldnames = ['place', 'nickname', 'score']
                             with open('scoreboard.csv', 'w', encoding='utf8', newline='') as f:
                                 writer = csv.DictWriter(f, delimiter=';', quotechar='"',
