@@ -7,3 +7,4 @@ LVL1_COINS = 0
 LVL2_COINS = 0
 LVL3_COINS = 0
 text = ''
+possibleletters = 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъфывапролджэячсмитьбю1234567890ё '

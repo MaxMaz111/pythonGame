@@ -1,6 +1,6 @@
 import pygame
 
-import parameters
+import character
 from coin import Coin
 from square import Square
 from character import Character
@@ -43,6 +43,8 @@ class Level:
                     FinishSquare(j * self.side, i * self.side, self.side, self.side, self.tiles)
 
     def scroll(self):
+        if self.dead:
+            return
         if not self.dead:
             if self.hero.sprite.rect.centerx < width // 5 and self.hero.sprite.normal_vector.x < 0:
                 self.shift = 5
@@ -91,30 +93,32 @@ class Level:
 
     def run(self):
         self.screen.blit(self.background, self.background_rect)
-        self.tiles.update(self.shift)
         self.tiles.draw(self.screen)
-        self.scroll()
         self.buttons.draw(self.screen)
-        if self.hero.sprite.mode == 'idle_right' or self.hero.sprite.mode == 'idle_left':
-            self.hero.sprite.animate(16)
-        else:
-            self.hero.sprite.animate(6)
-        self.hero.update()
-        self.horizontal()
-        self.vertical()
-        self.hero.draw(self.screen)
-        self.coins.update(self.shift)
         self.coins.draw(self.screen)
-        self.screen.blit(self.coin_display, (0, 0))
         font = pygame.font.Font(None, 70)
         text = font.render(f'{self.coin_counter}/{self.coin_amount}', True, (255, 255, 255))
         text_rect = text.get_rect()
         text_rect.x = 54
         text_rect.y = 0
         self.screen.blit(text, text_rect)
+        self.screen.blit(self.coin_display, (0, 0))
+        if not self.dead:
+            self.tiles.update(self.shift)
+            self.scroll()
+            if self.hero.sprite.mode == 'idle_right' or self.hero.sprite.mode == 'idle_left':
+                self.hero.sprite.animate(16)
+            else:
+                self.hero.sprite.animate(6)
+            self.hero.update()
+            self.horizontal()
+            self.vertical()
+            self.hero.draw(self.screen)
+            self.coins.update(self.shift)
 
-        if self.hero.sprite.rect.y >= height:
+        if self.hero.sprite.rect. y >= height:
             self.dead = True
+            character.Character.dead = True
             font = pygame.font.Font(None, 50)
             text = font.render('Game over!', True, (255, 255, 0))
             text_rect = text.get_rect()
